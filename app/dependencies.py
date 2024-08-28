@@ -4,9 +4,5 @@ from app.core.db import SessionLocal
 
 
 async def get_db() -> AsyncSession:
-    db = SessionLocal()
-
-    try:
-        yield db
-    finally:
-        await db.close()
+    async with SessionLocal() as session:
+        yield session
