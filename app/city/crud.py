@@ -5,8 +5,8 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import models
 from app.city import schemas
+from app.core import models
 
 
 async def get_all_cities(db: AsyncSession) -> Sequence[models.City]:

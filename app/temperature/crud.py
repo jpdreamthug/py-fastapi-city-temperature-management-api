@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import select, Sequence
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.city.crud import get_all_cities
 from app.core import models
@@ -11,7 +12,7 @@ from app.temperature.service import fetch_current_temperature
 
 
 async def get_temperatures(db: AsyncSession) -> Sequence[models.Temperature]:
-    query = select(models.Temperature)
+    query = select(models.Temperature).options(joinedload(models.Temperature.city))
     temperatures_list = await db.execute(query)
     return temperatures_list.scalars().all()
 
