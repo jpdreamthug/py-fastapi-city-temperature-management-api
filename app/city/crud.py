@@ -10,9 +10,7 @@ from app.core import models
 
 
 async def get_all_cities(
-        skip: int,
-        limit: int,
-        db: AsyncSession
+    skip: int, limit: int, db: AsyncSession
 ) -> Sequence[models.City]:
 
     query = select(models.City).offset(skip).limit(limit)
@@ -21,7 +19,7 @@ async def get_all_cities(
 
 
 async def create_city(
-        db: AsyncSession, city: schemas.CityCreate
+    db: AsyncSession, city: schemas.CityCreate
 ) -> models.City:
     new_city = models.City(
         name=city.name,
@@ -51,7 +49,7 @@ async def get_city_by_id(db: AsyncSession, city_id: int) -> models.City:
 
 
 async def update_city(
-        db: AsyncSession, city_id: int, city_update: schemas.CityUpdate
+    db: AsyncSession, city_id: int, city_update: schemas.CityUpdate
 ) -> models.City:
     city = await get_city_by_id(db=db, city_id=city_id)
     city.name = city_update.name

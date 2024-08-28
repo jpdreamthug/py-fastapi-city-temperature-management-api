@@ -11,26 +11,30 @@ from app.core import models
 from app.temperature.service import fetch_current_temperature
 
 
-async def get_temperatures(db: AsyncSession, skip: int, limit: int) -> Sequence[models.Temperature]:
-    query = (select(models.Temperature)
-             .options(joinedload(models.Temperature.city))
-             .offset(skip)
-             .limit(limit)
-             )
+async def get_temperatures(
+    db: AsyncSession, skip: int, limit: int
+) -> Sequence[models.Temperature]:
+    query = (
+        select(models.Temperature)
+        .options(joinedload(models.Temperature.city))
+        .offset(skip)
+        .limit(limit)
+    )
     temperatures_list = await db.execute(query)
     return temperatures_list.scalars().all()
 
 
 async def get_temperature_by_city_id(
-        db: AsyncSession, city_id: int, skip: int, limit: int
+    db: AsyncSession, city_id: int, skip: int, limit: int
 ) -> Sequence[models.Temperature]:
 
-    query = (select(models.Temperature)
-             .options(joinedload(models.Temperature.city))
-             .where(models.Temperature.city_id == city_id)
-             .offset(skip)
-             .limit(limit)
-             )
+    query = (
+        select(models.Temperature)
+        .options(joinedload(models.Temperature.city))
+        .where(models.Temperature.city_id == city_id)
+        .offset(skip)
+        .limit(limit)
+    )
 
     result = await db.execute(query)
     return result.scalars().all()
@@ -44,11 +48,13 @@ async def fetch_and_declare_temperatures(db: AsyncSession) -> None:
             new_temperature = models.Temperature(
                 city_id=city.id,
                 date_time=datetime.now(),
-                temperature=temperature
+                temperature=temperature,
             )
             db.add(new_temperature)
         except Exception as e:
-            print(f"Failed to fetch or store temperature for city {city.name}: {e}")
+            print(
+                f"Failed to fetch/store temperature for city {city.name}: {e}"
+            )
 
     try:
         await db.commit()
@@ -56,5 +62,5 @@ async def fetch_and_declare_temperatures(db: AsyncSession) -> None:
         await db.rollback()
         raise HTTPException(
             status_code=500,
-            detail="Error committing temperature data to the database"
+            detail="Error committing temperature data to the database",
         )

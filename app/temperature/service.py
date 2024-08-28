@@ -8,7 +8,7 @@ async def fetch_current_temperature(city_name: str) -> float:
         try:
             response = await client.get(
                 f"http://api.weatherapi.com/v1/current.json",
-                params={"key": settings.API_KEY, "q": city_name}
+                params={"key": settings.API_KEY, "q": city_name},
             )
             response.raise_for_status()
             data = response.json()
