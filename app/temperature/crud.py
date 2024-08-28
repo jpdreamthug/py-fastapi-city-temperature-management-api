@@ -11,16 +11,27 @@ from app.core import models
 from app.temperature.service import fetch_current_temperature
 
 
-async def get_temperatures(db: AsyncSession) -> Sequence[models.Temperature]:
-    query = select(models.Temperature).options(joinedload(models.Temperature.city))
+async def get_temperatures(db: AsyncSession, skip: int, limit: int) -> Sequence[models.Temperature]:
+    query = (select(models.Temperature)
+             .options(joinedload(models.Temperature.city))
+             .offset(skip)
+             .limit(limit)
+             )
     temperatures_list = await db.execute(query)
     return temperatures_list.scalars().all()
 
 
 async def get_temperature_by_city_id(
-        db: AsyncSession, city_id: int
+        db: AsyncSession, city_id: int, skip: int, limit: int
 ) -> Sequence[models.Temperature]:
-    query = select(models.Temperature).where(models.Temperature.city_id == city_id)
+
+    query = (select(models.Temperature)
+             .options(joinedload(models.Temperature.city))
+             .where(models.Temperature.city_id == city_id)
+             .offset(skip)
+             .limit(limit)
+             )
+
     result = await db.execute(query)
     return result.scalars().all()
 
