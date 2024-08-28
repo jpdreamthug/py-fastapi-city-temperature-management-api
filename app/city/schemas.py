@@ -1,7 +1,7 @@
-from app.core.db import Base
+from pydantic import BaseModel, ConfigDict
 
 
-class CityBase(Base):
+class CityBase(BaseModel):
     name: str
     additional_info: str
 
@@ -13,5 +13,4 @@ class CityCreate(CityBase):
 class City(CityBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
