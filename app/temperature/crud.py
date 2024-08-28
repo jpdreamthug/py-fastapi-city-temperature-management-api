@@ -1,10 +1,13 @@
+from datetime import datetime
+
 from fastapi import HTTPException
 from sqlalchemy import select, Sequence
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.city.crud import get_all_cities
 from app.core import models
-from app.temperature import schemas
+from app.temperature.service import fetch_current_temperature
 
 
 async def get_temperatures(db: AsyncSession) -> Sequence[models.Temperature]:
@@ -19,3 +22,27 @@ async def get_temperature_by_city_id(
     query = select(models.Temperature).where(models.Temperature.city_id == city_id)
     result = await db.execute(query)
     return result.scalars().all()
+
+
+async def fetch_and_declare_temperatures(db: AsyncSession) -> None:
+    cities = await get_all_cities(db=db)
+    for city in cities:
+        try:
+            temperature = await fetch_current_temperature(city_name=city.name)
+            new_temperature = models.Temperature(
+                city_id=city.id,
+                date_time=datetime.now(),
+                temperature=temperature
+            )
+            db.add(new_temperature)
+        except Exception as e:
+            print(f"Failed to fetch or store temperature for city {city.name}: {e}")
+
+    try:
+        await db.commit()
+    except IntegrityError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=500,
+            detail="Error committing temperature data to the database"
+        )
