@@ -5,6 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.dependencies import get_db, CommonsDep
 from app.temperature import schemas, crud
 
+
 router = APIRouter()
 
 
