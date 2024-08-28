@@ -9,8 +9,13 @@ from app.city import schemas
 from app.core import models
 
 
-async def get_all_cities(db: AsyncSession) -> Sequence[models.City]:
-    query = select(models.City)
+async def get_all_cities(
+        skip: int,
+        limit: int,
+        db: AsyncSession
+) -> Sequence[models.City]:
+
+    query = select(models.City).offset(skip).limit(limit)
     cities_list = await db.execute(query)
     return cities_list.scalars().all()
 

@@ -3,17 +3,17 @@ from sqlalchemy import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.city import schemas, crud
-from app.dependencies import get_db
-
+from app.dependencies import get_db, CommonsDep
 
 router = APIRouter()
 
 
 @router.get("/", response_model=list[schemas.City])
 async def get_cities(
+        commons: CommonsDep,
         db: AsyncSession = Depends(get_db)
 ) -> Sequence[schemas.City]:
-    return await crud.get_all_cities(db=db)
+    return await crud.get_all_cities(db=db, skip=commons["skip"], limit=commons["limit"])
 
 
 @router.post("/", response_model=schemas.CityCreate)
