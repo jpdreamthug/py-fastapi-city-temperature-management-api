@@ -40,8 +40,10 @@ async def get_temperature_by_city_id(
     return result.scalars().all()
 
 
-async def fetch_and_declare_temperatures(db: AsyncSession) -> None:
-    cities = await get_all_cities(db=db)
+async def fetch_and_declare_temperatures(
+    db: AsyncSession, skip: int, limit: int
+) -> None:
+    cities = await get_all_cities(db=db, skip=skip, limit=limit)
     for city in cities:
         try:
             temperature = await fetch_current_temperature(city_name=city.name)

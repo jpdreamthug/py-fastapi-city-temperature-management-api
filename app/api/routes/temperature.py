@@ -21,10 +21,7 @@ async def get_temperatures(
 ) -> Sequence[schemas.Temperature]:
     if city_id is not None:
         return await crud.get_temperature_by_city_id(
-            db=db,
-            city_id=city_id,
-            skip=commons["skip"],
-            limit=commons["limit"]
+            db=db, city_id=city_id, skip=commons["skip"], limit=commons["limit"]
         )
     return await crud.get_temperatures(
         db=db, skip=commons["skip"], limit=commons["limit"]
@@ -32,5 +29,9 @@ async def get_temperatures(
 
 
 @router.post("/update")
-async def update_temperatures(db: AsyncSession = Depends(get_db)) -> None:
-    await crud.fetch_and_declare_temperatures(db=db)
+async def update_temperatures(
+    commons: CommonsDep, db: AsyncSession = Depends(get_db)
+) -> None:
+    await crud.fetch_and_declare_temperatures(
+        db=db, skip=commons["skip"], limit=commons["limit"]
+    )
